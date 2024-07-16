@@ -1,0 +1,80 @@
+---
+# role parameters
+ct_vault_task_prefix: "=== CT VAULT ==="
+
+# common settings
+ct_vault_enable_persistent_storage: true
+
+# path settings
+ct_vault_path_base: "/srv/{{ ct_vault_ct_name }}"
+
+ct_vault_path_env: "{{ ct_vault_path_base }}"
+ct_vault_file_env: "env"
+ct_vault_template_env: "env.j2"
+
+ct_vault_path_storage: "{{ ct_vault_path_base }}/storage"
+ct_vault_ct_path_storage: "/vault/file"
+
+# network
+ct_vault_bind_addr: "127.0.0.1"
+ct_vault_bind_port: "8200"
+ct_vault_bind_ct_port: "8201"
+
+# container settings
+ct_vault_ct_name: "vault"
+ct_vault_ct_image: "hashicorp/vault"
+ct_vault_ct_version: "1.17.2"
+ct_vault_ct_restart_policy: "False"
+ct_vault_ct_state: "started"
+ct_vault_ct_restart: "False"
+ct_vault_ct_pull: "False"
+ct_vault_ct_recreate: "False"
+
+ct_vault_ct_volumes_storage: []
+ct_vault_ct_volumes_extra: []
+ct_vault_ct_volumes: "{{ ct_vault_ct_volumes_storage + ct_vault_ct_volumes_extra }}"
+
+ct_vault_ct_ports:
+  - "{{ ct_vault_bind_addr }}:{{ ct_vault_bind_port }}:{{ ct_vault_bind_ct_port }}"
+ct_vault_ct_capabilities:
+  - "IPC_LOCK"
+
+# service configuration
+ct_vault_enable_ui: "true"
+ct_vault_default_lease_ttl: "168h"
+ct_vault_max_lease_ttl: "720h"
+ct_vault_storage_file_path: "/vault/file"
+
+# environment
+ct_vault_env_vault_local_config: |
+  {
+  {% if ct_vault_enable_persistent_storage %}
+  "storage": {
+    "file": {
+      "path": "/vault/file"
+    }
+  },
+  {% endif %}
+  "listener": [
+    {
+      "tcp": {
+        "address": "0.0.0.0:{{ ct_vault_bind_ct_port }}",
+        "tls_disable": true
+      }
+    }
+  ],
+  "default_lease_ttl": "{{ ct_vault_default_lease_ttl }}",
+  "max_lease_ttl": "{{ ct_vault_max_lease_ttl }}",
+  "ui": {{ ct_vault_enable_ui | lower }}
+  }
+
+
+
+
+
+
+
+
+
+
+

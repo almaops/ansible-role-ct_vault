@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: Dmitrii Kashin
+  description: Ansible role creates hashicorp vault container
+  role_name: ct_vault
+  namespace: almaops
+  license: MIT
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - vault
+    - hashicorp
+...

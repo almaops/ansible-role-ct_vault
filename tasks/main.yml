@@ -1,0 +1,34 @@
+---
+- name: "{{ ct_vault_task_prefix }} load persistent volumes"
+  ansible.builtin.include_vars: "persistent-storage.yml"
+  when: ct_vault_enable_persistent_storage
+
+- name: "{{ ct_vault_task_prefix }} Create directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+  loop:
+    - "{{ ct_vault_path_base }}"
+    - "{{ ct_vault_path_env }}"
+    - "{{ ct_vault_path_storage }}"
+
+- name: "{{ ct_vault_task_prefix }} Template unix env vars for container"
+  ansible.builtin.template:
+    src: "{{ ct_vault_template_env }}"
+    dest: "{{ ct_vault_path_env }}/{{ ct_vault_file_env }}"
+
+- name: "{{ ct_vault_task_prefix }} Provision container {{ ct_vault_ct_name }}"
+  community.docker.docker_container:
+    name: "{{ ct_vault_ct_name }}"
+    image: "{{ ct_vault_ct_image }}"
+    ports: "{{ ct_vault_ct_ports }}"
+    restart_policy: "{{ ct_vault_ct_restart_policy }}"
+    state: "{{ ct_vault_ct_state }}"
+    restart: "{{ ct_vault_ct_restart | bool }}"
+    recreate: "{{ ct_vault_ct_recreate | bool }}"
+    volumes: "{{ ct_vault_ct_volumes }}"
+    env_file: "{{ ct_vault_path_env }}/{{ ct_vault_file_env }}"
+    capabilities: "{{ ct_vault_ct_capabilities }}"
+
+...
